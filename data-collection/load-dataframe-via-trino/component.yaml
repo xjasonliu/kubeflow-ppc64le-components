@@ -6,7 +6,7 @@ inputs:
     to schemata and catalogs. In the implicit case, the parameters catalog and schema
     must be set. Example: "SELECT * FROM transactions OFFSET 20".'}
 - {name: columns, type: 'typing.List[str]', description: List of column names of the
-    resulting Dataframe.}
+    resulting Dataframe., optional: true}
 - {name: columns_query, type: String, description: 'An ANSI SQL compliant "SHOW COLUMNS"
     query for data columns, as supported by Trino. Queries can either use explicit
     or implicit references to schemata and catalogs. In the implicit case, the parameters
@@ -47,7 +47,7 @@ implementation:
       def Load_Dataframe_via_Trino(
           query,
           dataframe_file,
-          columns,
+          columns = None,
           columns_query = None,
           host = "trino.trino",
           port = 8080,
@@ -128,7 +128,7 @@ implementation:
       import argparse
       _parser = argparse.ArgumentParser(prog='Load Dataframe via Trino', description='Load a Pandas Dataframe using Trino as SQL client.')
       _parser.add_argument("--query", dest="query", type=str, required=True, default=argparse.SUPPRESS)
-      _parser.add_argument("--columns", dest="columns", type=json.loads, required=True, default=argparse.SUPPRESS)
+      _parser.add_argument("--columns", dest="columns", type=json.loads, required=False, default=argparse.SUPPRESS)
       _parser.add_argument("--columns-query", dest="columns_query", type=str, required=False, default=argparse.SUPPRESS)
       _parser.add_argument("--host", dest="host", type=str, required=False, default=argparse.SUPPRESS)
       _parser.add_argument("--port", dest="port", type=int, required=False, default=argparse.SUPPRESS)
@@ -142,8 +142,11 @@ implementation:
     args:
     - --query
     - {inputValue: query}
-    - --columns
-    - {inputValue: columns}
+    - if:
+        cond: {isPresent: columns}
+        then:
+        - --columns
+        - {inputValue: columns}
     - if:
         cond: {isPresent: columns_query}
         then:
