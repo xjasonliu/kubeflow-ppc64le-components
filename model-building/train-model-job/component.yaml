@@ -731,7 +731,6 @@ implementation:
                 volumeMounts:
                   - mountPath: {train_mount}
                     name: training
-                restartPolicy: Never
                 env:
                   - name: S3_ENDPOINT
                     value: {minio_url}
@@ -969,7 +968,6 @@ implementation:
                 volumeMounts:
                   - mountPath: {train_mount}
                     name: training
-                restartPolicy: Never
                 env:
                 - name: MINIO_USER
                   valueFrom:
